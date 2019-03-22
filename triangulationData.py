@@ -36,6 +36,7 @@ class TriangleObject:
         self.starA, self.starB, self.starC = None, None, None
         self.distAB, self.distAC, self.distBC = 0, 0, 0
         self.angleA, self.angleB, self.angleC = 0, 0, 0
+        self.angleDiffSum = 0
 
 class SpaceObject:
     """ A space object contians information about all stars. """
@@ -135,6 +136,9 @@ def constructTriangle(starA, starB, starC):
     triangle.distAB, triangle.distAC, triangle.distBC = distanceList
     angleList = angles(triangle.distAB, triangle.distAC, triangle.distBC)
     triangle.angleA, triangle.angleB, triangle.angleC = angleList
+    triangle.angleDiffSum = abs(triangle.angleA - triangle.angleB) + \
+        abs(triangle.angleB - triangle.angleC) + \
+        abs(triangle.angleA - triangle.angleC)
     return triangle
 
 def constructTriangles(starList):
@@ -156,6 +160,25 @@ def constructTriangles(starList):
                 count += 1
     return triangles
 
+def sortByAngleSum(triangleList):
+    def partition(triangleList,low,high):
+        i = low - 1
+        pivot = triangleList[high].angleDiffSum
+        for j in range(low , high):
+            if triangeList[j].angleDiffSum <= pivot:
+                i = i + 1
+                triangleList[i], triangleList[j] = triangleList[j], triangleList[i]
+        triangleList[i+1], triangleList[high] = triangleList[high], triangleList[i+1]
+        return i + 1
+
+    def quickSort(triangleList, low, high):
+        if low < high:
+            pi = partition(triangleList, low, high)
+            quickSort(triangleList, low, pi-1)
+            quickSort(triangleList, pi+1, high)
+            
+    quicksort(triangleList, 0, len(triangleList))
+
 def exportCSV(triangleList):
     """ Export the CSV file of triangle objects. """
 
@@ -163,7 +186,8 @@ def exportCSV(triangleList):
         filewriter = csv.writer(csvfile, delimiter=',',quotechar='|',\
             quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(['Star A', 'Star B', 'Star C', 'Distance AB', \
-            'Distance AC', 'Distance BC', 'Angle A', 'Angle B', 'Angle C'])
+            'Distance AC', 'Distance BC', 'Angle A', 'Angle B', 'Angle C', \
+            'Angle Sum'])
         for triangle in triangleList:
             starA = str(triangle.starA.name)
             starB = str(triangle.starB.name)
@@ -174,8 +198,9 @@ def exportCSV(triangleList):
             angleA = str(triangle.angleA)
             angleB = str(triangle.angleB)
             angleC = str(triangle.angleC)
+            angleSum = str(triangle.angleDiffSum)
             filewriter.writerow([starA, starB, starC, distAB, distAC, distBC, \
-                angleA, angleB, angleC])
+                angleA, angleB, angleC, angleSum])
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
