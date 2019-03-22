@@ -47,8 +47,8 @@ def parseStars(file):
         """ Helper function that calculates the position in terms of decimal
         from coordinate system of degrees, minutes, and seconds. """
 
-        degree = float(degree) + float(minute / 60)
-        degree = degree + float(second / 3600)
+        degree = float(degree) + float(minute) / 60
+        degree = degree + float(second) / 3600
         return degree
 
     def extractId(name):
@@ -62,7 +62,7 @@ def parseStars(file):
         stringID = int(stringID)
         return stringID
 
-    for row in csvFile:
+    for row in file:
         if initial == False:
             initial = True
         else:
@@ -99,7 +99,6 @@ def angles(distAB, distAC, distBC):
     """ Computes the angles of the triangulation of the three stars using the
     Law of Cosine. """
 
-    math.acos()
     cosA = (distAB ** 2 + distAC ** 2 - distBC ** 2) / (2 * distAB * distAC)
     angleA = math.acos(cosA)
     cosB = (distAB ** 2 + distBC ** 2 - distAC ** 2) / (2 * distAB * distBC)
@@ -117,10 +116,10 @@ def constructTriangle(starA, starB, starC):
     triangle.starA = starA
     triangle.starB = starB
     triangle.starC = starC
-    distances = distances(starA, starB, starC)
-    triangle.distAB, triangle.distAC, triangle.distBC = distances
-    angles = angles(distances)
-    triangle.angleA, triangle.angleB, triangle.angleC = angles
+    distanceList = distances(starA, starB, starC)
+    triangle.distAB, triangle.distAC, triangle.distBC = distanceList
+    angleList = angles(triangle.distAB, triangle.distAC, triangle.distBC)
+    triangle.angleA, triangle.angleB, triangle.angleC = angleList
     return triangle
 
 def constructTriangles(starList):
@@ -128,15 +127,21 @@ def constructTriangles(starList):
     object. Return a list of TRIANGLE objects. """
 
     triangles = []
+    i = -1
     for starA in starList:
-        for starB in starList[i+1: len(starList) + 1]:
-            for starC in starList[j+1 : len(starList) + 1]:
+        i += 1
+        j = i
+        for starB in starList[i + 1: len(starList) + 1]:
+            j += 1
+            for starC in starList[j + 1 : len(starList) + 1]:
                 triangle = constructTriangle(starA, starB, starC)
                 triangles.append(triangle)
     return triangles
-                
+
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
     starList = parseStars(file)
     space.stars = starList
+    triangleList = constructTriangles(starList)
+    space.triangles = triangleList
