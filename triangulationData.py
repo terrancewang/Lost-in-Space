@@ -75,6 +75,35 @@ def parseStars(file):
             starList.append(star)
     return starList
 
+def euclideanDistance(starA, starB):
+    """ Computes the euclidean distance between starA and starB and returns
+    the distance."""
+
+    raDiff = starA.positionRa - starB.positionRa
+    decDiff = starA.positionDec - starB.positionDec
+    distance = (raDiff ** 2 + decDiff ** 2) ** 0.5
+    return distance
+
+def distances(starA, starB, starC):
+    """ Computes euclidean distance between each of the stars. Returns a list
+    of euclidean distances between each star. """
+    
+    distAB = euclideanDistance(starA, starB)
+    distAC = euclideanDistance(starA, starC)
+    distBC = euclideanDistance(starB, starC)
+    distances = [distAB, distAC, distBC]
+    return distances
+
+def constructTriangle(starA, starB, starC):
+    """ Constructs a triangle, determines distances between stars, angles
+    between stars, and returns a TRIANGLE object. """
+
+    triangle = TriangleObject()
+    triangle.starA = starA
+    triangle.starB = starB
+    triangle.starC = starC
+
+
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
