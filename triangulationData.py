@@ -1,9 +1,24 @@
 import csv
 import math
 
+"""
+Info:
+# A more complex definition of absolute magnitude is used for planets and small
+Solar System bodies, based on its brightness at one astronomical unit from the
+observer and the Sun. The Sun has an apparent magnitude of −27 and Sirius, the
+brightest visible star in the night sky, −1.46. This database is reduced so
+that it only holds the magnitude and coordinates of the stars with a visual
+magnitude below 5.3. Selecting the first 2300 brightest stars.
+
+Attribution Information:
+# The core projects were primarily created by Bryant Le (bryantl@berkeley.edu).
+Algorithm was developed by Tjorven Delabie, Thomas Durt, Jeroen Vandersteen.
+"""
+
 class StarObject:
     """ A Star Object includes information about each star including name,
-    position in 'ra' and position in 'dec,' and visual magnitude. """
+    position in 'ra' and position in 'dec,' and visual magnitude.
+    """
 
     def __init__(self):
         self.name = ''
@@ -125,7 +140,7 @@ def constructTriangle(starA, starB, starC):
 def constructTriangles(starList):
     """ Constructs TRIANGLE object from a list of STAR objects from a SPACE
     object. Return a list of TRIANGLE objects. """
-
+    count = 0
     triangles = []
     i = -1
     for starA in starList:
@@ -136,6 +151,9 @@ def constructTriangles(starList):
             for starC in starList[j + 1 : len(starList) + 1]:
                 triangle = constructTriangle(starA, starB, starC)
                 triangles.append(triangle)
+                print("Percent: " + str(count/(12167000000//5)))
+                # 2300 choose 3 ~ 12167000000/5 = 16%
+                count += 1
     return triangles
 
 def exportCSV(triangleList):
