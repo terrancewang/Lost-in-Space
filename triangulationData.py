@@ -33,3 +33,19 @@ def importFile(file):
     f = open(file)
     csv_f = csv.reader(f)
     return csv_f
+
+def parseStars(file):
+    """ Takes in a file containing information about stars and parses the file
+    into the constructor for the STAR object. Return a list of stars. """
+
+    initial = False
+    starList = []
+    for row in csvFile:
+        if initial == False:
+            initial = True
+        else:
+            
+
+if __name__ == "__main__":
+    file = importFile('Star Data - Sheet2.csv')
+    space = SpaceObject()
