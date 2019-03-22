@@ -4,7 +4,7 @@ import triangulationData
 class TestMain(unittest.TestCase):
 
     def testSort(self):
-        triangles = [triangulationData.Triangle() for i in range(7)]
+        triangles = [triangulationData.TriangleObject() for i in range(7)]
         triangles[0].angleDiffSum = 100
         triangles[1].angleDiffSum = 120
         triangles[2].angleDiffSum = 14
@@ -12,7 +12,7 @@ class TestMain(unittest.TestCase):
         triangles[4].angleDiffSum = 90
         triangles[5].angleDiffSum = 150
         triangles[6].angleDiffSum = 110
-        main.sortByAngleSum(triangles)
+        triangulationData.sortByAngleSum(triangles)
         self.assertEqual(triangles[0].angleDiffSum, 10)
         self.assertEqual(triangles[1].angleDiffSum, 14)
         self.assertEqual(triangles[2].angleDiffSum, 90)

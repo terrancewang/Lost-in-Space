@@ -165,7 +165,7 @@ def sortByAngleSum(triangleList):
         i = low - 1
         pivot = triangleList[high].angleDiffSum
         for j in range(low , high):
-            if triangeList[j].angleDiffSum <= pivot:
+            if triangleList[j].angleDiffSum <= pivot:
                 i = i + 1
                 triangleList[i], triangleList[j] = triangleList[j], triangleList[i]
         triangleList[i+1], triangleList[high] = triangleList[high], triangleList[i+1]
@@ -176,8 +176,8 @@ def sortByAngleSum(triangleList):
             pi = partition(triangleList, low, high)
             quickSort(triangleList, low, pi-1)
             quickSort(triangleList, pi+1, high)
-            
-    quicksort(triangleList, 0, len(triangleList))
+
+    quickSort(triangleList, 0, len(triangleList)-1)
 
 def exportCSV(triangleList):
     """ Export the CSV file of triangle objects. """
