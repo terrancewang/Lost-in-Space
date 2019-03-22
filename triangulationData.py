@@ -40,11 +40,27 @@ def parseStars(file):
 
     initial = False
     starList = []
+
+    def coordinateToDegree(degree, minute, second):
+        """ Calculates the position in terms of decimal from coordinate system
+        of degrees, minutes, and seconds. """
+
+        degree = float(degree) + float(minute / 60)
+        degree = degree + float(second / 3600)
+        return degree
+
     for row in csvFile:
         if initial == False:
             initial = True
         else:
-            
+            star = StarObject()
+            name, ra1, ra2, ra3, dec1, dec2, dec3, vmag = row
+            star.name = name
+            star.vMag = vmag
+            star.positionRa = coordinateToDegree(ra1, ra2, ra3)
+            star.positionDec = coordinateToDegree(dec1, dec2, dec3)
+            starList.append(star)
+    return starList
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
