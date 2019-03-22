@@ -19,3 +19,10 @@ class StarObject:
         self.positionRa = 0
         self.positionDec = 0
         self.vMag = 0
+
+def importFile(file):
+    """ Imports a CSV file through the use of CSV. Returns a read file. """
+
+    f = open(file)
+    csv_f = csv.reader(f)
+    return csv_f
