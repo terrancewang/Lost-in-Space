@@ -75,24 +75,6 @@ def parseStars(file):
             starList.append(star)
     return starList
 
-def partition(starList, low, high):
-    i = low - 1
-    pivot = starList[high]
-    for j in range(low, high):
-        if starList[j] <= pivot:
-            i = i + 1
-            starList[i], starList[j] = starList[j], starList[i]
-    starList[i+1], starList[high] = starList[high], starList[i+1]
-    return i + 1
-
-def starSort(starList, low, high):
-    """ Function that sorts the stars by
-    if low < high:
-        pi = partition(starList,low,high)
-        quickSort(starList, low, pi-1)
-        quickSort(starList, pi+1, high)
-
-
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
