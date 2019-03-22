@@ -1,5 +1,6 @@
 import csv
 import math
+import pickle
 
 """
 Info:
@@ -179,6 +180,17 @@ def sortByAngleSum(triangleList):
 
     quickSort(triangleList, 0, len(triangleList)-1)
 
+def getAngleSum(triangleList):
+    angleSumList = []
+    for triangle in triangleList:
+        angleSumList.append(triangle.angleDiffSum)
+    return angleSumList
+
+def exportPickle(triangleList):
+    with open("triangleAngleSum.txt", "wb") as fp:
+        angleSumList = getAngleSum(triangleList)
+        pickle.dump(angleSumList, fp)
+
 def exportCSV(triangleList):
     """ Export the CSV file of triangle objects. """
 
@@ -209,4 +221,5 @@ if __name__ == "__main__":
     space.stars = starList
     triangleList = constructTriangles(starList)
     space.triangles = triangleList
-    exportCSV(triangleList)
+    sortedTriangleList = sortByAngleSum(triangleList)
+    exportCSV(sortedTriangleList)
