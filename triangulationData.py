@@ -138,6 +138,27 @@ def constructTriangles(starList):
                 triangles.append(triangle)
     return triangles
 
+def exportCSV(triangleList):
+    """ Export the CSV file of triangle objects. """
+
+    with open('customerOrderAverages.csv', 'w') as csvfile:
+        filewriter = csv.writer(csvfile, delimiter=',',quotechar='|',\
+            quoting=csv.QUOTE_MINIMAL)
+        filewriter.writerow(['Star A', 'Star B', 'Star C', 'Distance AB', \
+            'Distance AC', 'Distance BC', 'Angle A', 'Angle B', 'Angle C'])
+        for triangle in triangleList:
+            starA = str(triangle.starA.name)
+            starB = str(triangle.starB.name)
+            starC = str(triangle.starC.name)
+            distAB = str(triangle.distAB)
+            distAC = str(triangle.distAC)
+            distBC = str(triangle.distBC)
+            angleA = str(triangle.angleA)
+            angleB = str(triangle.angleB)
+            angleC = str(triangle.angleC)
+            filewriter.writerow([starA, starB, starC, distAB, distAC, distBC, \
+                angleA, angleB, angleC])
+
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
@@ -145,3 +166,4 @@ if __name__ == "__main__":
     space.stars = starList
     triangleList = constructTriangles(starList)
     space.triangles = triangleList
+    exportCSV(triangleList)
