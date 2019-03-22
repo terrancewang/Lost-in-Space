@@ -123,6 +123,18 @@ def constructTriangle(starA, starB, starC):
     triangle.angleA, triangle.angleB, triangle.angleC = angles
     return triangle
 
+def constructTriangles(starList):
+    """ Constructs TRIANGLE object from a list of STAR objects from a SPACE
+    object. Return a list of TRIANGLE objects. """
+
+    triangles = []
+    for starA in starList:
+        for starB in starList[i+1: len(starList) + 1]:
+            for starC in starList[j+1 : len(starList) + 1]:
+                triangle = constructTriangle(starA, starB, starC)
+                triangles.append(triangle)
+    return triangles
+                
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
