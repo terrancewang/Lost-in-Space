@@ -20,7 +20,7 @@ class TriangleObject:
     def __init__(self):
         self.starA, self.starB, self.starC = None, None, None
         self.distAB, self.distAC, self.distBC = 0, 0, 0
-        self.angleAB, self.angleAC, self.angleBC = 0, 0, 0
+        self.angleA, self.angleB, self.angleC = 0, 0, 0
 
 class SpaceObject:
     """ A space object contians information about all stars. """
@@ -108,7 +108,7 @@ def angles(distAB, distAC, distBC):
     angleC = math.acos(cosC)
     angles = [angleA, angleB, angleC]
     return angles
-    
+
 def constructTriangle(starA, starB, starC):
     """ Constructs a triangle, determines distances between stars, angles
     between stars, and returns a TRIANGLE object. """
@@ -119,7 +119,9 @@ def constructTriangle(starA, starB, starC):
     triangle.starC = starC
     distances = distances(starA, starB, starC)
     triangle.distAB, triangle.distAC, triangle.distBC = distances
-
+    angles = angles(distances)
+    triangle.angleA, triangle.angleB, triangle.angleC = angles
+    return triangle
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
