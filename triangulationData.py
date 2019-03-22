@@ -35,6 +35,7 @@ class TriangleObject:
 
     def __init__(self):
         self.starA, self.starB, self.starC = None, None, None
+        self.magA, self.magB, self.magC = 0, 0, 0
         self.distAB, self.distAC, self.distBC = 0, 0, 0
         self.angleA, self.angleB, self.angleC = 0, 0, 0
         self.angleDiffSum = 0
@@ -140,6 +141,9 @@ def constructTriangle(starA, starB, starC):
     triangle.angleDiffSum = abs(triangle.angleA - triangle.angleB) + \
         abs(triangle.angleB - triangle.angleC) + \
         abs(triangle.angleA - triangle.angleC)
+    triangle.magA = starA.vMag
+    triangle.magB = starB.vMag
+    triangle.magC = starC.vMag
     return triangle
 
 def constructTriangles(starList):
@@ -156,8 +160,7 @@ def constructTriangles(starList):
             for starC in starList[j + 1 : len(starList) + 1]:
                 triangle = constructTriangle(starA, starB, starC)
                 triangles.append(triangle)
-                print("Percent: " + str(count/(12167000000//5)))
-                # 2300 choose 3 ~ 12167000000/5 = 16%
+                print(count)
                 count += 1
     return triangles
 
@@ -199,7 +202,7 @@ def exportCSV(triangleList):
             quoting=csv.QUOTE_MINIMAL)
         filewriter.writerow(['Star A', 'Star B', 'Star C', 'Distance AB', \
             'Distance AC', 'Distance BC', 'Angle A', 'Angle B', 'Angle C', \
-            'Angle Sum'])
+            'Angle Sum', 'Magnitude A', 'Magnitude B', 'Magnitude C'])
         for triangle in triangleList:
             starA = str(triangle.starA.name)
             starB = str(triangle.starB.name)
@@ -211,8 +214,11 @@ def exportCSV(triangleList):
             angleB = str(triangle.angleB)
             angleC = str(triangle.angleC)
             angleSum = str(triangle.angleDiffSum)
+            magA = str(triangle.magA)
+            magB = str(triangle.magB)
+            magC = str(triangle.magC)
             filewriter.writerow([starA, starB, starC, distAB, distAC, distBC, \
-                angleA, angleB, angleC, angleSum])
+                angleA, angleB, angleC, angleSum, magA, magB, magC])
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
@@ -222,4 +228,5 @@ if __name__ == "__main__":
     triangleList = constructTriangles(starList)
     space.triangles = triangleList
     sortedTriangleList = sortByAngleSum(triangleList)
+    exportPickle(sortedTriangleList)
     exportCSV(sortedTriangleList)
