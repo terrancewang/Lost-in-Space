@@ -1,4 +1,5 @@
 import csv
+import math
 
 class StarObject:
     """ A Star Object includes information about each star including name,
@@ -18,7 +19,7 @@ class TriangleObject:
 
     def __init__(self):
         self.starA, self.starB, self.starC = None, None, None
-        self.distanceAB, self.distanceAC, self.distanceBC = 0, 0, 0
+        self.distAB, self.distAC, self.distBC = 0, 0, 0
         self.angleAB, self.angleAC, self.angleBC = 0, 0, 0
 
 class SpaceObject:
@@ -87,13 +88,27 @@ def euclideanDistance(starA, starB):
 def distances(starA, starB, starC):
     """ Computes euclidean distance between each of the stars. Returns a list
     of euclidean distances between each star. """
-    
+
     distAB = euclideanDistance(starA, starB)
     distAC = euclideanDistance(starA, starC)
     distBC = euclideanDistance(starB, starC)
     distances = [distAB, distAC, distBC]
     return distances
 
+def angles(distAB, distAC, distBC):
+    """ Computes the angles of the triangulation of the three stars using the
+    Law of Cosine. """
+
+    math.acos()
+    cosA = (distAB ** 2 + distAC ** 2 - distBC ** 2) / (2 * distAB * distAC)
+    angleA = math.acos(cosA)
+    cosB = (distAB ** 2 + distBC ** 2 - distAC ** 2) / (2 * distAB * distBC)
+    angleB = math.acos(cosB)
+    cosC = (distAC ** 2 + distBC ** 2 - distAB ** 2) / (2 * distAC * distBC)
+    angleC = math.acos(cosC)
+    angles = [angleA, angleB, angleC]
+    return angles
+    
 def constructTriangle(starA, starB, starC):
     """ Constructs a triangle, determines distances between stars, angles
     between stars, and returns a TRIANGLE object. """
@@ -102,6 +117,8 @@ def constructTriangle(starA, starB, starC):
     triangle.starA = starA
     triangle.starB = starB
     triangle.starC = starC
+    distances = distances(starA, starB, starC)
+    triangle.distAB, triangle.distAC, triangle.distBC = distances
 
 
 if __name__ == "__main__":
