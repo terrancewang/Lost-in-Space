@@ -6,6 +6,7 @@ class StarObject:
 
     def __init__(self):
         self.name = ''
+        self.starID = 0
         self.positionRa = 0
         self.positionDec = 0
         self.vMag = 0
@@ -42,12 +43,23 @@ def parseStars(file):
     starList = []
 
     def coordinateToDegree(degree, minute, second):
-        """ Calculates the position in terms of decimal from coordinate system
-        of degrees, minutes, and seconds. """
+        """ Helper function that calculates the position in terms of decimal
+        from coordinate system of degrees, minutes, and seconds. """
 
         degree = float(degree) + float(minute / 60)
         degree = degree + float(second / 3600)
         return degree
+
+    def extractId(name):
+        """ Helper function that extracts the ID from the name and returns the
+        integer form. """
+
+        stringID = ''
+        for i in name:
+            if i in '0123456789':
+                stringID = stringID + i
+        stringID = int(stringID)
+        return stringID
 
     for row in csvFile:
         if initial == False:
@@ -56,12 +68,33 @@ def parseStars(file):
             star = StarObject()
             name, ra1, ra2, ra3, dec1, dec2, dec3, vmag = row
             star.name = name
+            star.starID = extractId(name)
             star.vMag = vmag
             star.positionRa = coordinateToDegree(ra1, ra2, ra3)
             star.positionDec = coordinateToDegree(dec1, dec2, dec3)
             starList.append(star)
     return starList
 
+def partition(starList, low, high):
+    i = low - 1
+    pivot = starList[high]
+    for j in range(low, high):
+        if starList[j] <= pivot:
+            i = i + 1
+            starList[i], starList[j] = starList[j], starList[i]
+    starList[i+1], starList[high] = starList[high], starList[i+1]
+    return i + 1
+
+def starSort(starList, low, high):
+    """ Function that sorts the stars by
+    if low < high:
+        pi = partition(starList,low,high)
+        quickSort(starList, low, pi-1)
+        quickSort(starList, pi+1, high)
+
+
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     space = SpaceObject()
+    starList = parseStars(file)
+    space.stars = starList
