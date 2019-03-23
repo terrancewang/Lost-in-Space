@@ -117,9 +117,13 @@ def constructTriangles(starList):
     return None
 
 def insertTable(db_file, triangle):
-    
-
-
+    conn = sqlite3.connect(db_file)
+    conn.execute("INSERT INTO TRIANGLE (STAR_A_NAME, STAR_B_NAME, STAR_C_NAME,\
+    DIST_A, DIST_B, DIST_C, MAG_A, MAG_B,MAG_C) \
+      VALUES (triangle[0],triangle[1], triangle[2], triangle[3], triangle[4], \
+      triangle[5], triangle[6], triangle[7], triangle[8])");
+    conn.commit()
+    conn.close()
 
 def sortByAngleSum(triangleList):
     def partition(triangleList,low,high):
