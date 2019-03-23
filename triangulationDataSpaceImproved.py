@@ -66,7 +66,7 @@ def euclideanDistance(starA, starB):
     the distance."""
 
     raDiff = starA[1] - starB[1]
-    decDiff = starA[2] - starB[2]
+    decDiff = starA[2] - starB[2]]
     distance = (raDiff ** 2 + decDiff ** 2) ** 0.5
     return distance
 
@@ -96,8 +96,11 @@ def angles(distAB, distAC, distBC):
 def constructTriangle(starA, starB, starC):
     """ Constructs a triangle, determines distances between stars, angles
     between stars, and returns a TRIANGLE object. """
-    triangle = [starA[0], starB[0], starC[0]] + distances(starA, starB, starC) \
-        + [starA[3], starB[3], starC[3]]
+    distanceList = distances(starA, starB, starC)
+    angleList = angles(distanceList[0], distanceList[1], distanceList[2])
+    angleSum = abs(angleA - angleB) + abs(angleB - angleC) + abs(angleA - angleC)
+    triangle = [starA[0], starB[0], starC[0]] + distanceList \
+        + [starA[3], starB[3], starC[3]] + angleList + [angleSum]
     return triangle
 
 def constructTriangles(starList):
@@ -109,10 +112,14 @@ def constructTriangles(starList):
         j = i
         for starB in starList[i + 1: len(starList) + 1]:
             j += 1
-            print(i,j)
             for starC in starList[j + 1 : len(starList) + 1]:
                 triangle = constructTriangle(starA, starB, starC)
-    return triangles
+    return None
+
+def insertTable(db_file, triangle):
+    
+
+
 
 def sortByAngleSum(triangleList):
     def partition(triangleList,low,high):
@@ -144,39 +151,28 @@ def exportPickle(triangleList):
         angleSumList = getAngleSum(triangleList)
         pickle.dump(angleSumList, fp)
 
-def constructTable():
-    def createConnection(dbFile):
-
-def exportCSV(triangleList):
-    """ Export the CSV file of triangle objects. """
-
-    with open('customerOrderAverages.csv', 'w') as csvfile:
-        filewriter = csv.writer(csvfile, delimiter=',',quotechar='|',\
-            quoting=csv.QUOTE_MINIMAL)
-        filewriter.writerow(['Star A', 'Star B', 'Star C', 'Distance AB', \
-            'Distance AC', 'Distance BC', 'Angle A', 'Angle B', 'Angle C', \
-            'Angle Sum', 'Magnitude A', 'Magnitude B', 'Magnitude C'])
-        for triangle in triangleList:
-            starA = str(triangle.starA.name)
-            starB = str(triangle.starB.name)
-            starC = str(triangle.starC.name)
-            distAB = str(triangle.distAB)
-            distAC = str(triangle.distAC)
-            distBC = str(triangle.distBC)
-            angleA = str(triangle.angleA)
-            angleB = str(triangle.angleB)
-            angleC = str(triangle.angleC)
-            angleSum = str(triangle.angleDiffSum)
-            magA = str(triangle.magA)
-            magB = str(triangle.magB)
-            magC = str(triangle.magC)
-            filewriter.writerow([starA, starB, starC, distAB, distAC, distBC, \
-                angleA, angleB, angleC, angleSum, magA, magB, magC])
+def create_connection(db_file):
+    """ create a database connection to a SQLite database """
+    try:
+        conn = sqlite3.connect(db_file)
+        print(sqlite3.version)
+        conn.execute('''CREATE TABLE TRIANGLES
+         (STAR_A_NAME TEXT ,
+         STAR_B_NAME TEXT ,
+         STAR_C_NAME TEXT  ,
+         DIST_A REAL,
+         DIST_B REAL,
+         DIST_C REAL,
+         MAG_A REAL,
+         MAG_B REAL,
+         MAG_C REAL);''')
+    except Error as e:
+        print(e)
+    finally:
+        conn.close()
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
+    create_connection("triangles.db")
     starList = parseStars(file)
     triangleList = constructTriangles(starList)
-    #sortedTriangleList = sortByAngleSum(triangleList)
-    #exportPickle(sortedTriangleList)
-    #exportCSV(sortedTriangleList)
