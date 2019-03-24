@@ -3,8 +3,6 @@ import math
 import pickle
 import sqlite3
 from sqlite3 import Error
-import psycopg2
-from config import config
 
 """
 Info:
@@ -87,11 +85,11 @@ def angles(distAB, distAC, distBC):
     Law of Cosine. """
 
     cosA = (distAB ** 2 + distAC ** 2 - distBC ** 2) / (2 * distAB * distAC)
-    angleA = math.acos(cosA)
+    angleA = math.degrees(math.acos(cosA))
     cosB = (distAB ** 2 + distBC ** 2 - distAC ** 2) / (2 * distAB * distBC)
-    angleB = math.acos(cosB)
+    angleB = math.degrees(math.acos(cosB))
     cosC = (distAC ** 2 + distBC ** 2 - distAB ** 2) / (2 * distAC * distBC)
-    angleC = math.acos(cosC)
+    angleC = math.degrees(math.acos(cosC))
     angles = [angleA, angleB, angleC]
     return angles
 
@@ -125,11 +123,12 @@ def constructTriangles(db_file, starList):
 
 def insertTable(db_file, triangle):
     conn = sqlite3.connect(db_file)
-    sql = ''' INSERT INTO triangles(STAR_A_NAME, STAR_B_NAME,
-    STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, ANGLEA, ANGLEB,
-    ANGLEC, ANGLESUM) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) '''
+    sql = ''' INSERT INTO TRIANGLES (STAR_A_NAME, STAR_B_NAME,
+        STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, ANGLESUM)
+        VALUES (?,?,?,?,?,?,?,?,?,?) '''
     cur = conn.cursor()
     cur.execute(sql, triangle)
+    print('inserted')
 
 def sortByAngleSum(triangleList):
     def partition(triangleList,low,high):
@@ -165,8 +164,7 @@ def create_connection(db_file):
     """ create a database connection to a SQLite database """
     try:
         conn = sqlite3.connect(db_file)
-        print(sqlite3.version)
-        conn.execute('''CREATE TABLE TRIANGLES2
+        conn.execute('''CREATE TABLE TRIANGLES
          (STAR_A_NAME TEXT ,
          STAR_B_NAME TEXT ,
          STAR_C_NAME TEXT  ,
@@ -176,14 +174,12 @@ def create_connection(db_file):
          MAG_A REAL,
          MAG_B REAL,
          MAG_C REAL,
-         ANGLEA REAL,
-         ANGLEB REAL,
-         ANGLEC REAL,
          ANGLESUM REAL);''')
     except Error as e:
         print(e)
     finally:
         conn.close()
+    print('Done making table')
 
 if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
