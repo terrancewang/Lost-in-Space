@@ -99,10 +99,13 @@ def constructTriangle(starA, starB, starC):
     """ Constructs a triangle, determines distances between stars, angles
     between stars, and returns a TRIANGLE object. """
     distanceList = distances(starA, starB, starC)
+    maxD = max(distanceList)
+    distanceList = [d / maxD for d in distanceList]
     angleList = angles(distanceList[0], distanceList[1], distanceList[2])
-    maxDist = max(distanceList)
-    distanceRatio = [d / maxDist for d in distanceList]
-    triangle = [starA.name, starB.name, starC.name] + distanceRatio + [starA[3], starB[3], starC[3]] + angleList
+    angleSum = abs(angleList[0] - angleList[1]) + \
+        abs(angleList[1] - angleList[2]) + abs(angleList[2] - angleList[0])
+    triangle = [starA[0], starB[0], starC[0]] + distanceList \
+        + [starA[3], starB[3], starC[3]] + [angleSum]
     return triangle
 
 def constructTriangles(db_file, starList):
@@ -121,14 +124,12 @@ def constructTriangles(db_file, starList):
     return None
 
 def insertTable(db_file, triangle):
-    sql = ''' INSERT INTO projects(name,begin_date,end_date)
-              VALUES(?,?,?) '''
     conn = sqlite3.connect(db_file)
-    conn.execute("INSERT INTO TRIANGLES2 (STAR_A_NAME, STAR_B_NAME, STAR_C_NAME,\
-    DIST_A, DIST_B, DIST_C, MAG_A, MAG_B,MAG_C, ANGLEA, ANGLEB, ANGLEC, ANGLESUM) \
-      VALUES (a, b, c, d, e, f, g, h, i , j, k, l, m)");
-    conn.commit()
-    conn.close()
+    sql = ''' INSERT INTO triangles(STAR_A_NAME, STAR_B_NAME,
+    STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, ANGLEA, ANGLEB,
+    ANGLEC, ANGLESUM) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) '''
+    cur = conn.cursor()
+    cur.execute(sql, triangle)
 
 def sortByAngleSum(triangleList):
     def partition(triangleList,low,high):
