@@ -1,8 +1,10 @@
 import csv
 import math
 import pickle
-import import sqlite3
+import sqlite3
 from sqlite3 import Error
+import psycopg2
+from config import config
 
 """
 Info:
@@ -57,7 +59,7 @@ def parseStars(file):
         else:
             name, ra1, ra2, ra3, dec1, dec2, dec3, vmag = row
             star = [name, coordinateToDegree(ra1, ra2, ra3), \
-                coordinateToDegree(dec1, dec2, dec3), vmag]
+                coordinateToDegree(dec1, dec2, dec3), float(vmag)]
             starList.append(star)
     return starList
 
@@ -66,7 +68,7 @@ def euclideanDistance(starA, starB):
     the distance."""
 
     raDiff = starA[1] - starB[1]
-    decDiff = starA[2] - starB[2]]
+    decDiff = starA[2] - starB[2]
     distance = (raDiff ** 2 + decDiff ** 2) ** 0.5
     return distance
 
@@ -98,12 +100,12 @@ def constructTriangle(starA, starB, starC):
     between stars, and returns a TRIANGLE object. """
     distanceList = distances(starA, starB, starC)
     angleList = angles(distanceList[0], distanceList[1], distanceList[2])
-    angleSum = abs(angleA - angleB) + abs(angleB - angleC) + abs(angleA - angleC)
-    triangle = [starA[0], starB[0], starC[0]] + distanceList \
-        + [starA[3], starB[3], starC[3]] + angleList + [angleSum]
+    maxDist = max(distanceList)
+    distanceRatio = [d / maxDist for d in distanceList]
+    triangle = [starA.name, starB.name, starC.name] + distanceRatio + [starA[3], starB[3], starC[3]] + angleList
     return triangle
 
-def constructTriangles(starList):
+def constructTriangles(db_file, starList):
     """ Constructs TRIANGLE object from a list of STAR objects from a SPACE
     object. Return a list of TRIANGLE objects. """
     i = -1
@@ -114,14 +116,17 @@ def constructTriangles(starList):
             j += 1
             for starC in starList[j + 1 : len(starList) + 1]:
                 triangle = constructTriangle(starA, starB, starC)
+                print(triangle)
+                insertTable(db_file, triangle)
     return None
 
 def insertTable(db_file, triangle):
+    sql = ''' INSERT INTO projects(name,begin_date,end_date)
+              VALUES(?,?,?) '''
     conn = sqlite3.connect(db_file)
-    conn.execute("INSERT INTO TRIANGLE (STAR_A_NAME, STAR_B_NAME, STAR_C_NAME,\
-    DIST_A, DIST_B, DIST_C, MAG_A, MAG_B,MAG_C) \
-      VALUES (triangle[0],triangle[1], triangle[2], triangle[3], triangle[4], \
-      triangle[5], triangle[6], triangle[7], triangle[8])");
+    conn.execute("INSERT INTO TRIANGLES2 (STAR_A_NAME, STAR_B_NAME, STAR_C_NAME,\
+    DIST_A, DIST_B, DIST_C, MAG_A, MAG_B,MAG_C, ANGLEA, ANGLEB, ANGLEC, ANGLESUM) \
+      VALUES (a, b, c, d, e, f, g, h, i , j, k, l, m)");
     conn.commit()
     conn.close()
 
@@ -160,7 +165,7 @@ def create_connection(db_file):
     try:
         conn = sqlite3.connect(db_file)
         print(sqlite3.version)
-        conn.execute('''CREATE TABLE TRIANGLES
+        conn.execute('''CREATE TABLE TRIANGLES2
          (STAR_A_NAME TEXT ,
          STAR_B_NAME TEXT ,
          STAR_C_NAME TEXT  ,
@@ -169,7 +174,11 @@ def create_connection(db_file):
          DIST_C REAL,
          MAG_A REAL,
          MAG_B REAL,
-         MAG_C REAL);''')
+         MAG_C REAL,
+         ANGLEA REAL,
+         ANGLEB REAL,
+         ANGLEC REAL,
+         ANGLESUM REAL);''')
     except Error as e:
         print(e)
     finally:
@@ -179,4 +188,4 @@ if __name__ == "__main__":
     file = importFile('Star Data - Sheet2.csv')
     create_connection("triangles.db")
     starList = parseStars(file)
-    triangleList = constructTriangles(starList)
+    triangleList = constructTriangles("triangles.db", starList)
