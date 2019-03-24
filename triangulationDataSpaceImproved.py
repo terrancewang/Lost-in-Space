@@ -99,11 +99,14 @@ def constructTriangle(starA, starB, starC):
     distanceList = distances(starA, starB, starC)
     maxD = max(distanceList)
     distanceList = [d / maxD for d in distanceList]
+    copyDistList = list(distanceList)
+    copyDistList.remove(max(copyDistList))
+    secondMaxDist = max(copyDistList)
     angleList = angles(distanceList[0], distanceList[1], distanceList[2])
     angleSum = abs(angleList[0] - angleList[1]) + \
         abs(angleList[1] - angleList[2]) + abs(angleList[2] - angleList[0])
     triangle = [starA[0], starB[0], starC[0]] + distanceList \
-        + [starA[3], starB[3], starC[3]] + [angleSum]
+        + [starA[3], starB[3], starC[3]] + [secondMaxDist]
     return triangle
 
 def constructTriangles(db_file, starList):
@@ -119,18 +122,28 @@ def constructTriangles(db_file, starList):
                 triangle = constructTriangle(starA, starB, starC)
                 print(triangle)
                 insertTable(db_file, triangle)
+                return None
     return None
 
 def insertTable(db_file, triangle):
     conn = sqlite3.connect(db_file)
     sql = ''' INSERT INTO TRIANGLES (STAR_A_NAME, STAR_B_NAME,
-        STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, ANGLESUM)
+        STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, RATIO)
         VALUES (?,?,?,?,?,?,?,?,?,?) '''
-    cur = conn.cursor()
-    cur.execute(sql, triangle)
+    """conn.execute(sql, (str(triangle[0]), str(triangle[1]), str(triangle[2]), \
+    str(triangle[3]), str(triangle[4]), str(triangle[5]), str(triangle[6]), \
+    str(triangle[7]), str(triangle[8]), str(triangle[9]) ))"""
+    conn.execute(" INSERT INTO TRIANGLES (STAR_A_NAME, STAR_B_NAME,STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, RATIO) VALUES ("Star","star","star",1,2,3,4,5,6,7)")
     print('inserted')
 
-def sortByAngleSum(triangleList):
+def selectTable(db_file):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.execute("SELECT STAR_A_NAME, STAR_B_NAME, STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, RATIO from TRIANGLES")
+    for row in cursor:
+        print(row[0])
+    conn.close()
+
+"""def sortByAngleSum(triangleList):
     def partition(triangleList,low,high):
         i = low - 1
         pivot = triangleList[high].angleDiffSum
@@ -158,7 +171,7 @@ def getAngleSum(triangleList):
 def exportPickle(triangleList):
     with open("triangleAngleSum.txt", "wb") as fp:
         angleSumList = getAngleSum(triangleList)
-        pickle.dump(angleSumList, fp)
+        pickle.dump(angleSumList, fp)"""
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
@@ -174,7 +187,7 @@ def create_connection(db_file):
          MAG_A REAL,
          MAG_B REAL,
          MAG_C REAL,
-         ANGLESUM REAL);''')
+         RATIO REAL);''')
     except Error as e:
         print(e)
     finally:
@@ -186,3 +199,4 @@ if __name__ == "__main__":
     create_connection("triangles.db")
     starList = parseStars(file)
     triangleList = constructTriangles("triangles.db", starList)
+    selectTable("triangles.db")
