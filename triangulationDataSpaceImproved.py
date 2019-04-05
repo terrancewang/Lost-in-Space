@@ -122,18 +122,17 @@ def constructTriangles(db_file, starList):
                 triangle = constructTriangle(starA, starB, starC)
                 print(triangle)
                 insertTable(db_file, triangle)
-                return None
     return None
 
 def insertTable(db_file, triangle):
     conn = sqlite3.connect(db_file)
-    sql = ''' INSERT INTO TRIANGLES (STAR_A_NAME, STAR_B_NAME,
-        STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, RATIO)
-        VALUES (?,?,?,?,?,?,?,?,?,?) '''
-    """conn.execute(sql, (str(triangle[0]), str(triangle[1]), str(triangle[2]), \
-    str(triangle[3]), str(triangle[4]), str(triangle[5]), str(triangle[6]), \
-    str(triangle[7]), str(triangle[8]), str(triangle[9]) ))"""
-    conn.execute(" INSERT INTO TRIANGLES (STAR_A_NAME, STAR_B_NAME,STAR_C_NAME, DIST_A, DIST_B, DIST_C, MAG_A, MAG_B, MAG_C, RATIO) VALUES ("Star","star","star",1,2,3,4,5,6,7)")
+    c = conn.cursor()
+    c.execute("INSERT INTO triangles VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+             (triangle[0], triangle[1], triangle[2], triangle[3],
+              triangle[4], triangle[5], triangle[6], triangle[7],
+              triangle[8], triangle[9]))
+    conn.commit()
+    conn.close()
     print('inserted')
 
 def selectTable(db_file):
